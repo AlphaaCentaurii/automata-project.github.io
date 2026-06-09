@@ -1,0 +1,7 @@
+{
+  "name": "automata-project",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
