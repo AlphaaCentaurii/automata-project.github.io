@@ -22,6 +22,7 @@
               "base": "www",
               "browser": ""
             },
+            "baseHref": "/automata-project.github.io/",
             "index": "src/index.html",
             "polyfills": [
               "src/polyfills.ts"
