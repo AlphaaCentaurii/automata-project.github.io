@@ -1,129 +1,3 @@
-// import { CommonModule } from '@angular/common';
-// import { Component } from '@angular/core';
-// import { FormsModule } from '@angular/forms';
-
-// import {
-//   IonContent,
-//   IonInput,
-//   IonButton,
-//   IonLabel
-// } from '@ionic/angular/standalone';
-
-// @Component({
-//   selector: 'app-home',
-//   templateUrl: './home.page.html',
-//   styleUrls: ['./home.page.scss'],
-//   standalone: true,
-//   imports: [
-//     CommonModule,
-//     FormsModule,
-//     IonContent,
-//     IonInput,
-//     IonButton,
-//     IonLabel
-//   ]
-// })
-// export class HomePage {
-
-//   expression: string = '';
-//   currentInput: string = '';
-  
-//   currentStatus: string = '';
-//   inputValid: boolean = false;
-//   causes: string [] = [];
-
-//   //inputValid: boolean = false;
-
-// startAnalyzer() {
-//     this.currentInput = this.expression;
-//     this.causes = this.causes;
-//     this.inputValid = this.isValidArithmeticExpression(this.expression);
-
-//     this.currentStatus = this.inputValid
-//       ? 'VALID EXPRESSION'
-//       : `INVALID EXPRESSION. ${this.causes.join(' ')}`;
-
-//     this.expression = '';
-//   }
-
-//   isValidArithmeticExpression(expression: string): boolean {
-
-//     this.causes = [];
-
-//     // Remove whitespace
-//     expression = expression.replace(/\s+/g, '');
-
-//     if (expression.length === 0) {
-//       this.causes.push('No expression detected.');
-//     }
-
-//     // Must contain at least one operator
-//     if (!/[+\-*/]/.test(expression)) {
-//       this.causes.push('No operator detected.');
-//     }
-
-//     // Allow only digits, operators, and parentheses
-//     if (!/^[0-9()+\-*/]+$/.test(expression)) {
-//       this.causes.push('Non-numeral characters detected.');
-//     }
-
-//     // Check balanced parentheses
-//     let balance = 0;
-
-//     for (const char of expression) {
-
-//       if (char === '(') {
-//         balance++;
-//       }
-
-//       if (char === ')') {
-//         balance--;
-
-//         if (balance < 0) {
-//           this.causes.push('Imbalanced parenthesis pair.');
-//           break;
-//         }
-//       }
-//     }
-
-//     if (balance !== 0) {
-//       this.causes.push('Imbalanced parenthesis pair.');
-//     }
-
-//     // Cannot start or end with an operator
-//     if (/^[+\-*/]|[+\-*/]$/.test(expression)) {
-//       this.causes.push('Expression starts or ends with an operator.');
-//     }
-
-//     // No consecutive operators
-//     if (/[+\-*/]{2,}/.test(expression)) {
-//       this.causes.push('Consecutive operators detected.');
-//     }
-
-//     // No operator immediately after '('
-//     if (/\([+\-*/]/.test(expression)) {
-//       this.causes.push('Operator after opening parenthesis detected.');
-//     }
-
-//     // No operator immediately before ')'
-//     if (/[+\-*/]\)/.test(expression)) {
-//       this.causes.push('Operator before closing parenthesis detected.');
-//     }
-
-//     // No empty parentheses
-//     if (/\(\)/.test(expression)) {
-//       this.causes.push('Empty parentheses detected.');
-//     }
-
-//     return this.causes.length === 0;
-//   }
-
-//   clearInput() {
-//     this.currentInput = '';
-//     this.currentStatus = '';
-//   }
-// }
-
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -135,9 +9,7 @@ import {
   IonLabel
 } from '@ionic/angular/standalone';
 
-// ==========================================
-// --- LEXER/TOKENIZER ---
-// ==========================================
+
 enum TokenType { NUM, PLUS, MINUS, MULT, DIV, LPAREN, RPAREN, EOF }
 
 class Token {
@@ -147,7 +19,7 @@ class Token {
 function tokenize(input: string): Token[] {
   const tokens: Token[] = [];
   let i = 0;
-  input = input.replace(/\s+/g, ""); // Remove whitespaces
+  input = input.replace(/\s+/g, ""); 
 
   while (i < input.length) {
     const c = input.charAt(i);
@@ -175,9 +47,6 @@ function tokenize(input: string): Token[] {
   return tokens;
 }
 
-// ==========================================
-// --- PARSE TREE NODES ---
-// ==========================================
 abstract class Node {
   children: Node[] = [];
   constructor(public name: string) {}
@@ -192,9 +61,6 @@ class TerminalNode extends Node {
   constructor(value: string) { super(value); }
 }
 
-// ==========================================
-// --- PARSER ---
-// ==========================================
 class Parser {
   private ptr = 0;
   constructor(private tokens: Token[]) {}
@@ -235,7 +101,6 @@ class Parser {
       const op = this.consume();
       const right = this.parseFactor();
 
-      // --- FIX: Force the left side to be a TERM node to match TERM -> TERM * FACTOR ---
       if (!(current instanceof TermNode)) {
         const leftWrapper = new TermNode();
         leftWrapper.children.push(current);
@@ -296,9 +161,6 @@ class Parser {
   }
 }
 
-// ==========================================
-// --- COMPONENT IMPLEMENTATION ---
-// ==========================================
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
@@ -322,7 +184,6 @@ export class HomePage {
   inputValid: boolean = false;
   causes: string[] = [];
   
-  // New array property to bind derivation steps to your HTML template UI
   derivationSteps: string[] = [];
 
   startAnalyzer() {
@@ -330,7 +191,6 @@ export class HomePage {
     this.causes = [];
     this.derivationSteps = [];
 
-    // Step 1: Run your existing Regex validation checklist
     const regexValid = this.isValidArithmeticExpression(this.currentInput);
 
     if (!regexValid) {
@@ -341,7 +201,6 @@ export class HomePage {
       return;
     }
 
-    // Step 2: If basic layout is clean, pass it to the actual Context-Free Grammar Parser
     try {
       const tokens = tokenize(this.currentInput);
       const parser = new Parser(tokens);
@@ -351,7 +210,6 @@ export class HomePage {
         throw new Error("Dangling tokens found. Syntax Error.");
       }
 
-      // Step 3: Expression accepted! Generate Leftmost Derivation
       this.inputValid = true;
       this.currentStatus = 'ACCEPTED';
       this.generateDerivation(parseTreeRoot);
@@ -365,7 +223,6 @@ export class HomePage {
     this.expression = '';
   }
 
-  // Left-Most Derivation Generator mapped directly into component state
   private generateDerivation(root: Node) {
     const currentSententialForm: Node[] = [root];
     
